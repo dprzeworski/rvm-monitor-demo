@@ -1,18 +1,18 @@
 # RVM Monitor
 
-Aplikacja webowa do monitorowania sieci automatów do zwrotu opakowań (RVM) w skali ~2400 urządzeń, zintegrowana z zewnętrznymi systemami API oraz systemem zgłoszeń serwisowych.
+plikacja webowa wspierająca monitorowanie infrastruktury ponad 2400 automatów do zwrotu opakowań (RVM), zintegrowana z zewnętrznymi systemami oraz platformą zgłoszeń serwisowych.
 
 ## Opis
 
-RVM Monitor centralizuje dane o statusie i dostępności automatów zwrotu opakowań, dostarczając zespołowi IT jednego miejsca do monitorowania stanu urządzeń, historii przestojów oraz statusu zgłoszeń serwisowych powiązanych z konkretnymi maszynami.
+Celem projektu było skrócenie czasu potrzebnego do diagnostyki problemów oraz zebranie rozproszonych informacji w jednym miejscu.
 
 ## Kluczowe funkcje
 
-- **Statystyki dostępności** – codzienne migawki stanu urządzeń, śledzenie przejść offline/online, dedykowany widok urządzeń niedostępnych 24h+ z filtrowaniem po dacie i statusie
+- **Statystyki dostępności** – codzienne migawki stanu urządzeń, śledzenie przejść offline/online, dedykowany widok urządzeń pozostających offline przez ponad 24 godziny
 - **Eksport danych** – eksport raportów do formatu XLSX
 - **Obsługa urządzeń zdemontowanych** – automatyczne wykluczanie zdemontowanych urządzeń z liczników i statystyk na podstawie danych z zewnętrznego API
 - **Integracja z systemem zgłoszeń serwisowych** – automatyczna synchronizacja statusu i rozwiązania zgłoszeń powiązanych z urządzeniami
-- **Panel administracyjny** – role użytkowników (admin/user/viewer)
+- **Panel administracyjny** – zarządzanie rolami użytkowników (Administrator / User / Viewer)
 
 ## Stos technologiczny
 
@@ -42,6 +42,10 @@ Projekt aktywnie rozwijany od marca 2026, w bieżącym użyciu produkcyjnym.
 ## Uwaga
 
 To repozytorium prezentuje wybrane fragmenty kodu jako demo umiejętności. Ze względu na dane firmowe (adresy wewnętrzne, klucze API, dane produkcyjne) pełny kod źródłowy nie jest publikowany w całości.
+
+## Informacja
+
+Projekt został zrealizowany z wykorzystaniem narzędzi AI wspomagających proces tworzenia oprogramowania. Autor odpowiadał za analizę wymagań, projekt architektury, integrację systemów, wdrożenie oraz rozwój aplikacji.
 
 ## Autor
 
