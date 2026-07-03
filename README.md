@@ -1,6 +1,6 @@
 # RVM Monitor
 
-plikacja webowa wspierająca monitorowanie infrastruktury ponad 2400 automatów do zwrotu opakowań (RVM), zintegrowana z zewnętrznymi systemami oraz platformą zgłoszeń serwisowych.
+Aplikacja webowa wspierająca monitorowanie infrastruktury ponad 2400 automatów do zwrotu opakowań (RVM), zintegrowana z zewnętrznymi systemami oraz platformą zgłoszeń serwisowych.
 
 ## Opis
 
