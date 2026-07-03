@@ -1,0 +1,36 @@
+# Zależności
+node_modules/
+
+# Zmienne środowiskowe i sekrety
+.env
+.env.local
+.env.*.local
+
+# Baza danych (dane produkcyjne/testowe)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+
+# Logi
+*.log
+logs/
+
+# Puppeteer / Chrome user data (jeśli generowane lokalnie)
+.puppeteer-cache/
+chrome-user-data*/
+
+# Build / cache
+dist/
+build/
+.cache/
+
+# Edytor / system
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Eksporty XLSX generowane runtime (jeśli nie mają być w repo)
+*.xlsx
+!example.xlsx

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RVM Monitor</title>
+<script crossorigin src="/vendor/react.production.min.js"></script>
+<script crossorigin src="/vendor/react-dom.production.min.js"></script>
+<script src="/vendor/babel.min.js"></script>
+<script src="/vendor/xlsx.full.min.js"></script>
+<script src="/vendor/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset i podstawy ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+select, input, textarea, button { font-family: inherit; font-size: inherit; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.content-area {
+  flex: 1;
+  padding: 24px 28px;
+  overflow-x: hidden;
+}
+
+/* ── Sidebar ───────────────────────────────────────────────────────────── */
+.sidebar {
+  background: #0f172a;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  flex-shrink: 0;
+  border-right: 1px solid #1e293b;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.sidebar.expanded  { width: 240px; }
+.sidebar.collapsed { width: 64px; }
+
+.sidebar-header {
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #1e293b;
+  min-height: 64px;
+}
+.sidebar-logo {
+  width: 32px; height: 32px;
+  background: #22c55e;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; color: white;
+  flex-shrink: 0;
+}
+.sidebar-title {
+  font-weight: 700;
+  color: white;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar.collapsed .sidebar-title { display: none; }
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto
+}
+.sidebar-nav-item {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 9px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar-nav-item:hover { background: #1e293b; color: #f1f5f9; }
+.sidebar-nav-item.active {
+  background: #1e293b;
+  color: white;
+}
+.sidebar-nav-item .icon {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.sidebar-nav-item .badge {
+  margin-left: auto;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.sidebar.collapsed .sidebar-nav-item .label { display: none; }
+.sidebar.collapsed .sidebar-nav-item .badge { display: none; }
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sidebar.collapsed .sidebar-user-name,
+.sidebar.collapsed .sidebar-user-role,
+.sidebar.collapsed .sidebar-action-text { display: none; }
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  overflow: hidden;
+}
+.sidebar-user-avatar {
+  width: 32px; height: 32px;
+  background: #334155;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.sidebar-user-info {
+  min-width: 0;
+  overflow: hidden;
+}
+.sidebar-user-name {
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar-user-role {
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sidebar-action {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 7px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+.sidebar-action:hover { background: #1e293b; color: #f1f5f9; }
+.sidebar-action.danger:hover { color: #fca5a5; }
+.sidebar-action .icon { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
+
+.sidebar-toggle {
+  background: #1e293b;
+  border: none;
+  color: #94a3b8;
+  padding: 10px;
+  font-size: 14px;
+  border-top: 1px solid #1e293b;
+}
+.sidebar-toggle:hover { background: #334155; color: white; }
+
+/* ── Topbar (mały pasek nad treścią, pokazuje nazwę zakładki) ─────────── */
+.page-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+.page-subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ── Karty, tabele, formularze – wspólne klasy ────────────────────────── */
+.card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.card-body {
+  padding: 16px;
+}
+.btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.1s, border-color 0.1s;
+}
+.btn-primary     { background: #2563eb; color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-secondary   { background: white; color: #0f172a; border-color: #e2e8f0; }
+.btn-secondary:hover { background: #f8fafc; }
+.btn-danger      { background: #fee2e2; color: #991b1b; }
+.btn-danger:hover { background: #fecaca; }
+.btn-ghost       { background: transparent; color: #64748b; }
+.btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
+.btn-sm          { padding: 4px 10px; font-size: 12px; }
+
+.input, .select {
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #0f172a;
+}
+.input:focus, .select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+/* ── Utility – scrollbary ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── Animacje ─────────────────────────────────────────────────────────── */
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+/* ── Helpers ─────────────────────────────────────────────────────────── */
+.note-row {
+  border-left: 3px solid #bfdbfe;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: #f8fafc;
+  border-radius: 0 6px 6px 0;
+}
+.note-row:hover .note-actions { opacity: 1; }
+.note-actions { opacity: 0; transition: opacity 0.15s; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Utils i API -->
+<script type="text/babel" src="/js/utils.js"></script>
+<script type="text/babel" src="/js/api.js"></script>
+<script type="text/babel" src="/js/icons.js"></script>
+
+<!-- Komponenty w kolejności zależności -->
+<script type="text/babel" src="/js/components/NotesList.js"></script>
+<script type="text/babel" src="/js/components/Sidebar.js"></script>
+<script type="text/babel" src="/js/components/DeviceDetailsPanel.js"></script>
+<script type="text/babel" src="/js/components/DevicesTab.js"></script>
+<script type="text/babel" src="/js/components/TicketsTab.js"></script>
+<script type="text/babel" src="/js/components/UsersTab.js"></script>
+<script type="text/babel" src="/js/components/StatsTab.js"></script>
+<script type="text/babel" src="/js/components/AdminTab.js"></script>
+<script type="text/babel" src="/js/components/AboutTab.js"></script>
+
+<!-- Główna aplikacja -->
+<script type="text/babel" src="/js/app.js"></script>
+</body>
+</html>

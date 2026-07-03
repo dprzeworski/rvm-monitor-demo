@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RVM Monitor – Logowanie</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #0f172a;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f1f5f9;
+}
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+}
+.logo {
+  width: 48px; height: 48px;
+  background: #22c55e;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 22px;
+  margin: 0 auto 20px;
+}
+h1 {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.sub {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 32px;
+}
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+input {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #f1f5f9;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus { border-color: #22c55e; }
+.field { margin-bottom: 18px; }
+.error {
+  background: #450a0a;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  display: none;
+}
+.error.show { display: block; }
+button[type="submit"] {
+  width: 100%;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+button[type="submit"]:hover { background: #16a34a; }
+button[type="submit"]:active { background: #15803d; }
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #334155;
+  margin-top: 28px;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">R</div>
+  <h1>RVM Monitor</h1>
+  <p class="sub">System monitorowania recyklomatów</p>
+
+  <div class="error" id="error"></div>
+
+  <form id="form">
+    <div class="field">
+      <label for="login">Login</label>
+      <input type="text" id="login" name="login" autocomplete="username" autofocus required placeholder="Twój login" />
+    </div>
+    <div class="field">
+      <label for="password">Hasło</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="••••••••" />
+    </div>
+    <button type="submit" id="btn">Zaloguj się</button>
+  </form>
+
+  <div class="footer">RVM Monitor · v4.7 · DP</div>
+</div>
+
+<script>
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('error');
+  btn.textContent = 'Logowanie…';
+  btn.disabled = true;
+  err.classList.remove('show');
+
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      login:    document.getElementById('login').value,
+      password: document.getElementById('password').value,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (data.ok) {
+    window.location = '/';
+  } else {
+    err.textContent = data.error || 'Błąd logowania';
+    err.classList.add('show');
+    btn.textContent = 'Zaloguj się';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
