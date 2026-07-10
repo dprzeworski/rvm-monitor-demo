@@ -6,6 +6,12 @@ Aplikacja webowa wspierająca monitorowanie infrastruktury ponad 2400 automatów
 
 Celem projektu było skrócenie czasu potrzebnego do diagnostyki problemów oraz zebranie rozproszonych informacji w jednym miejscu.
 
+## Zrzuty ekranu / Podgląd
+![Strona główna](demo1.png)
+![Panel zgłoszeń](demo2.png)
+![Panel użytkowników](demo3.png)
+![Panel logowania](demo4.png)
+
 ## Kluczowe funkcje
 
 - **Statystyki dostępności** – codzienne migawki stanu urządzeń, śledzenie przejść offline/online, dedykowany widok urządzeń pozostających offline przez ponad 24 godziny
